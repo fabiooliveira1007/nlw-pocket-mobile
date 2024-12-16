@@ -56,8 +56,8 @@ Certifique-se de que o servidor backend está rodando antes de iniciar o fronten
 
 ### 2. Configurar e iniciar o aplicativo mobile:
 ```bash
-# Acesse a pasta do frontend
-cd ../mobile
+# Abra um novo terminal na raíz do projeto e acesse a pasta do frontend
+cd mobile
 
 # Instale as dependências do aplicativo
 npm install
@@ -78,6 +78,8 @@ npx expo start
     timeout: 700,
   });
   ```
+  
+Certifique-se de que o seu dispositivo móvel e seu computador estejam na mesma rede.
 
 Depois de configurar, leia o QR Code no terminal usando o **Expo Go** ou execute no emulador Android.
 
