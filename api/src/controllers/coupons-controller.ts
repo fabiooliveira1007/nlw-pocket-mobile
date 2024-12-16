@@ -1,4 +1,4 @@
-import type { Request, Response, NextFunction } from "express"
+import { Request, Response, NextFunction } from "express"
 import { prisma } from "@/database/prisma"
 import { AppError } from "@/utils/AppError"
 import crypto from "node:crypto"
@@ -21,12 +21,12 @@ class CouponsController {
         throw new AppError("Estabelecimento não encontrado!", 404)
       }
 
-      if (market.coupons <= 0) {
+      if (market.cupons <= 0) {
         throw new AppError("Não há cupom disponível no momento!")
       }
 
       await prisma.market.update({
-        data: { coupons: { decrement: 1 } },
+        data: { cupons: { decrement: 1 } },
         where: { id: market_id },
       })
 

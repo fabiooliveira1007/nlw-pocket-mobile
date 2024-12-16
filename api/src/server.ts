@@ -1,20 +1,14 @@
-import express from 'express';
-import { routes } from './routes';
-import cors from 'cors';
-import { errorHandling } from './middlewares/error-handling';
+import express from "express"
 
-const PORT = 3333;
-const app = express();
+import { routes } from "./routes"
+import { errorHandling } from "./middlewares/error-handling"
 
-app.use(
-  cors({
-    origin: 'http://localhost:8081', // Allow requests from this origin
-  })
-);
+const PORT = 3333
+const app = express()
 
-app.use(express.json());
-app.use(routes);
+app.use(express.json())
+app.use(routes)
 
-app.use(errorHandling);
+app.use(errorHandling)
 
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server is running on port ${PORT}`))
