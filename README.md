@@ -36,22 +36,34 @@ git clone https://github.com/fabiooliveira1007/nlw-pocket-mobile
 
 # Acesse o diretório principal do projeto
 cd nlw-pocket-mobile
-
-# Instale as dependências do frontend (mobile)
-cd mobile
-npm install
-
-# Inicie o aplicativo mobile com Expo
-npx expo start
 ```
 
+### 1. Configurar e iniciar o servidor backend:
 ```bash
-# Abra outro terminal para iniciar o backend
-cd ../api
+# Acesse a pasta do backend
+cd api
+
+# Instale as dependências do servidor
 npm install
 
-# Inicie o servidor backend
+# Inicie o servidor
 npm start
+```
+
+Certifique-se de que o servidor backend está rodando antes de iniciar o frontend.
+
+---
+
+### 2. Configurar e iniciar o aplicativo mobile:
+```bash
+# Acesse a pasta do frontend
+cd ../mobile
+
+# Instale as dependências do aplicativo
+npm install
+
+# Inicie o aplicativo com Expo
+npx expo start
 ```
 
 ⚠️ **Instruções importantes:**
