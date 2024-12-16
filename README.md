@@ -79,8 +79,8 @@ npx expo start
   });
   ```
   
-Certifique-se de que o seu dispositivo móvel e seu computador estejam na mesma rede.
+- Certifique-se de que o seu dispositivo móvel e seu computador estejam na mesma rede.
+- Depois de configurar, leia o QR Code no terminal usando o **Expo Go** ou execute no emulador Android.
+- Explore o **Nearby** e aproveite as funcionalidades de geolocalização em tempo real! 🌍
 
-Depois de configurar, leia o QR Code no terminal usando o **Expo Go** ou execute no emulador Android.
-
-Explore o **Nearby** e aproveite as funcionalidades de geolocalização em tempo real! 🌍
+---
