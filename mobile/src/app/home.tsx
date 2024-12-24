@@ -1,128 +1,83 @@
-import { useEffect, useState } from 'react';
-import { View, Alert, Text } from 'react-native';
+import { useRef, useEffect } from 'react';
+import { View, StyleSheet, Text } from 'react-native';
 import MapView, { Callout, Marker } from 'react-native-maps';
-import * as Location from 'expo-location';
 import { router } from 'expo-router';
-
-import { api } from '@/services/api';
-
-import type { PlaceProps } from '@/components/place';
+import { useCategories } from '@/hooks/useCategories';
+import { useMarkets } from '@/hooks/useMarkets';
+import { Categories } from '@/components/categories';
 import { Places } from '@/components/places';
-import { Categories, type CategoriesProps } from '@/components/categories';
 import { fontFamily, colors } from '@/styles/theme';
 
-type MarketsProps = PlaceProps & {
-  latitude: number;
-  longitude: number;
-};
-
-const currentLocation = {
+const CURRENT_LOCATION = {
   latitude: -23.561187293883442,
   longitude: -46.656451388116494,
 };
 
+const DELTA_SET = {
+  latitude: 0.01,
+  longitude: 0.01,
+};
+
+const EDGE_PADDING = { top: 50, right: 50, bottom: 50, left: 50 };
+
 export default function Home() {
-  const [categories, setCategories] = useState<CategoriesProps>([]);
-  const [category, setCategory] = useState('');
-  const [markets, setMarkets] = useState<MarketsProps[]>([]);
-
-  async function fetchCategories() {
-    try {
-      const { data } = await api.get('/categories');
-      setCategories(data);
-      setCategory(data[0].id);
-    } catch (error) {
-      console.error(error);
-      Alert.alert('Categorias', 'Não foi possível carregar as categorias.');
-    }
-  }
-
-  async function fetchMarkets() {
-    try {
-      if (!category) return;
-      const { data } = await api.get(`/markets/category/${category}`);
-      setMarkets(data);
-    } catch (error) {
-      console.error(error);
-      Alert.alert('Locais', 'Não foi possível carregar os locais.');
-    }
-  }
-
-  async function getCurrentLocation() {
-    try {
-      const { granted } = await Location.requestForegroundPermissionsAsync();
-
-      if (granted) {
-        const location = await Location.getCurrentPositionAsync();
-        console.log(location)
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  const mapRef = useRef<MapView>(null);
+  const { categories, selectedCategory, setSelectedCategory } = useCategories();
+  const { markets } = useMarkets(selectedCategory);
 
   useEffect(() => {
-    fetchCategories();
+    if (markets.length > 0 && mapRef.current) {
+      const coordinates = markets.map(market => ({
+        latitude: market.latitude,
+        longitude: market.longitude,
+      }));
 
-  }, []);
-
-  useEffect(() => {
-    fetchMarkets();
-  }, [category]);
+      mapRef.current.fitToCoordinates(coordinates, {
+        edgePadding: EDGE_PADDING,
+        animated: true,
+      });
+    }
+  }, [markets]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#CECECE' }}>
+    <View style={styles.container}>
       <Categories
         data={categories}
-        onSelect={setCategory}
-        selected={category}
+        onSelect={setSelectedCategory}
+        selected={selectedCategory}
       />
       <MapView
-        style={{ flex: 1 }}
+        ref={mapRef}
+        style={styles.map}
         initialRegion={{
-          latitude: currentLocation.latitude,
-          longitude: currentLocation.longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
+          latitude: CURRENT_LOCATION.latitude,
+          longitude: CURRENT_LOCATION.longitude,
+          latitudeDelta: DELTA_SET.latitude,
+          longitudeDelta: DELTA_SET.longitude,
         }}
       >
         <Marker
           identifier='current'
-          coordinate={{
-            latitude: currentLocation.latitude,
-            longitude: currentLocation.longitude,
-          }}
+          coordinate={CURRENT_LOCATION}
           image={require('@/assets/location.png')}
         />
-        {markets.map(item => (
+        {markets.map(market => (
           <Marker
-            key={item.id}
-            identifier={item.id}
+            key={market.id}
+            identifier={market.id}
             coordinate={{
-              latitude: item.latitude,
-              longitude: item.longitude,
+              latitude: market.latitude,
+              longitude: market.longitude,
             }}
             image={require('@/assets/pin.png')}
           >
-            <Callout onPress={() => router.navigate(`/market/${item.id}`)}>
-              <View>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    color: colors.gray[600],
-                    fontFamily: fontFamily.medium,
-                  }}
-                >
-                  {item.name}
+            <Callout onPress={() => router.push(`/market/${market.id}`)}>
+              <View style={styles.callout}>
+                <Text style={styles.marketName}>
+                  {market.name || 'Nome não disponível'}
                 </Text>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    color: colors.gray[600],
-                    fontFamily: fontFamily.regular,
-                  }}
-                >
-                  {item.address}
+                <Text style={styles.marketAddress}>
+                  {market.address || 'Endereço não disponível'}
                 </Text>
               </View>
             </Callout>
@@ -133,3 +88,27 @@ export default function Home() {
     </View>
   );
 }
+
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#CECECE',
+  },
+  map: {
+    flex: 1,
+  },
+  callout: {
+    padding: 8,
+    maxWidth: 200,
+  },
+  marketName: {
+    fontSize: 14,
+    color: colors.gray[600],
+    fontFamily: fontFamily.medium,
+  },
+  marketAddress: {
+    fontSize: 12,
+    color: colors.gray[600],
+    fontFamily: fontFamily.regular,
+  },
+});

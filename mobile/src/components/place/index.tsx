@@ -8,15 +8,8 @@ import {
 import { IconTicket } from '@tabler/icons-react-native';
 import { styles } from './styles';
 import { colors } from '@/styles/theme';
+import type { PlaceProps } from '@/types';
 
-export type PlaceProps = {
-  id: string;
-  name: string;
-  description: string;
-  coupons: number;
-  cover: string;
-  address: string;
-};
 
 type Props = TouchableOpacityProps & {
   data: PlaceProps;
